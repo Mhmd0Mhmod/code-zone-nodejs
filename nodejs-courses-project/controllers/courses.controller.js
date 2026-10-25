@@ -1,18 +1,33 @@
 const { validationResult } = require("express-validator");
 const Course = require("../model/course.model");
-
+const http = require("../utils/http");
 const getAllCourses = async (req, res) => {
   const courses = await Course.find({});
   return res.json(courses);
 };
 const getCourse = async (req, res) => {
-  const course = await Course.findById(req.params.courseId);
-  if (!course) {
-    return res.status(404).json({
-      message: "Course not found",
+  try {
+    const course = await Course.findById(req.params.courseId);
+    if (!course) {
+      return res.status(404).json({
+        status: http.FAIL,
+        data: {
+          course: null,
+        },
+      });
+    }
+    return res.json({
+      status: http.SUCCESS,
+      data: {
+        course,
+      },
+    });
+  } catch (err) {
+    return res.status(400).json({
+      status: http.FAIL,
+      message: "Invaild Object ID",
     });
   }
-  return res.json(course);
 };
 const addCourse = async (req, res) => {
   const errors = validationResult(req);
@@ -35,7 +50,10 @@ const updateCourse = async (req, res) => {
 };
 const deleteCourse = async (req, res) => {
   const course = await Course.findByIdAndDelete(req.params.courseId);
-  return res.json(course);
+  return res.json({
+    status: http.SUCCESS,
+    data: null,
+  });
 };
 module.exports = {
   getAllCourses,

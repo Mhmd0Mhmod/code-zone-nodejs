@@ -1,13 +1,13 @@
-// الحل الأفضل والأسرع (إذا كان الملف في نفس المجلد باسم .env)
 require("dotenv").config({
   path: "./.env.local",
 });
+const morgan = require("morgan");
 
 const express = require("express");
 const mongoose = require("mongoose");
 const coursesRouter = require("./routes/courses.route");
 const app = express();
-
+app.use(morgan("dev"));
 app.use(express.json());
 app.use("/api/courses", coursesRouter);
 

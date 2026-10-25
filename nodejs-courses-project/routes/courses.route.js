@@ -11,6 +11,7 @@ router
   .route("/")
   .get(coursesController.getAllCourses)
   .post(addCourseVaildationSchema(), coursesController.addCourse);
+
 router
   .route("/:courseId")
   .get(coursesController.getCourse)
