@@ -1,10 +1,10 @@
 const User = require("../model/user.model");
 const http = require("../utils/http");
 const AppError = require("../utils/errors");
-const Bcrypt = require("bcrypt");
 const Session = require("../model/session.model");
-const jwt = require("jsonwebtoken");
-const generateToken = require("../utils/generateToken");
+const bcrypt = require("../utils/bcrypt");
+const jwt = require("../utils/jwt");
+
 async function register(req, res, next) {
   const { firstName, lastName, email, password } = req.body;
   const findUser = await User.findOne({ email });
@@ -14,12 +14,13 @@ async function register(req, res, next) {
     );
   }
   // passowrd hashing
-  const hashdPassowrd = await Bcrypt.hash(password, 10);
+  const hashdPassowrd = await bcrypt.hash(password);
   const newUser = new User({
     firstName,
     lastName,
     email,
     password: hashdPassowrd,
+    avatar: req.file.path,
   });
   await newUser.save();
   return res.status(201).json({
@@ -42,9 +43,15 @@ async function login(req, res, next) {
       AppError.create("There r no user with this email , try to sign up "),
     );
   }
-  const matchedPassword = await Bcrypt.compare(password, user.password);
+  const matchedPassword = await bcrypt.compare(password, user.password);
   if (matchedPassword) {
-    const token = generateToken({ ...user });
+    const token = jwt.sign({
+      _id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+    });
     const session = await Session.create({
       token,
       userId: user._id,

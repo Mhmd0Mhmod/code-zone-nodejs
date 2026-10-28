@@ -1,5 +1,6 @@
 const User = require("../model/user.model");
 const http = require("../utils/http");
+const bcrypt = require("../utils/bcrypt");
 async function getAllUsers(req, res) {
   const { size, page } = req.params;
   const skip = (page - 1) * size;
@@ -19,6 +20,20 @@ async function getAllUsers(req, res) {
     },
   });
 }
+async function adduser(req, res, next) {
+  const hashdPassowrd = await bcrypt.hash(req.body.password);
+  const user = await User.create({
+    ...req.body,
+    password: hashdPassowrd,
+  });
+  return res.status(201).json({
+    status: http.SUCCESS,
+    data: {
+      user,
+    },
+  });
+}
 module.exports = {
   getAllUsers,
+  adduser,
 };

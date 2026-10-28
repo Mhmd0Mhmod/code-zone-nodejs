@@ -5,7 +5,7 @@ const authRouter = require("./auth.route");
 const verifyToken = require("../middlewares/verifyToken");
 const router = express.Router();
 
-router.use("/courses", coursesRouter);
+router.use("/courses", verifyToken, coursesRouter);
 router.use("/users", verifyToken, usersRouter);
 router.use("/auth", authRouter);
 
