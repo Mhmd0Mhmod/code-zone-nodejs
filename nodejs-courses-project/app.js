@@ -7,11 +7,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const routes = require("./routes");
 const cors = require("cors");
+
 const app = express();
 
 app.use(express.static("./public"));
-app.use(morgan("dev"));
+
 app.use(express.json());
+app.use(morgan("dev"));
 app.use(cors());
 
 app.use("/api", routes);
@@ -35,7 +37,7 @@ app.listen(8080, "localhost", () => {
 
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => {
+  .then((data) => {
     console.log("Connected to mongoose successfully");
   })
   .catch((err) => {
